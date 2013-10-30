@@ -25,7 +25,8 @@ public class TokenStreamTest {
     TokenStream instance = new TokenStream(sr, "",1);
 
     int reflectedSourceEnd = -1;
-    Object reflectedSourceReader = null;
+    Object reflectedSourceReader = null;    
+    Object reflectedSourceBuffer = null;
 
     Class secretClass = instance.getClass();
     Field fields[] = secretClass.getDeclaredFields();
@@ -36,10 +37,14 @@ public class TokenStreamTest {
        } else if (fields[i].getName() == "sourceReader") {
          fields[i].setAccessible(true);
          reflectedSourceReader = fields[i].get(instance);
-       }
+       } else if (fields[i].getName() == "sourceBuffer") {
+         fields[i].setAccessible(true);
+         reflectedSourceBuffer = fields[i].get(instance);
+        }
     }
 
     assertNull(instance.getSourceString());
+    assertNotNull(reflectedSourceBuffer);
     assertTrue(reflectedSourceReader == sr);
     assertTrue(reflectedSourceEnd == 0);
     assertTrue(instance.sourceCursor == 0);
@@ -55,7 +60,6 @@ public class TokenStreamTest {
 
     int reflectedSourceEnd = -1;
     Object reflectedSourceReader = null;
-    Object reflectedSourceBuffer = null;
 
     Class secretClass = instance.getClass();
     Field fields[] = secretClass.getDeclaredFields();
@@ -66,14 +70,10 @@ public class TokenStreamTest {
        } else if (fields[i].getName() == "sourceReader") {
          fields[i].setAccessible(true);
          reflectedSourceReader = fields[i].get(instance);
-        } else if (fields[i].getName() == "sourceBuffer") {
-         fields[i].setAccessible(true);
-         reflectedSourceBuffer = fields[i].get(instance);
-        }
+        } 
     }
 
     assertNull(instance.getSourceString());
-    assertNotNull(reflectedSourceBuffer);
     assertNotNull(reflectedSourceReader);
     assertTrue(reflectedSourceEnd >= 0);
     assertTrue(instance.sourceCursor == 0);
@@ -378,12 +378,27 @@ public class TokenStreamTest {
   }
 
   @Test
-  public void testIsJSSpace_bb_cis128() {
+  public void testIsJSSpace_bb_cis128() throws IllegalAccessException, IllegalArgumentException {
     //Tests if the method returns the boolean for a given int
     //Input: c = 128
-    //Expected Output: c == 0x20 || c == 0x9 || c == 0xC || c == 0xB
+    //Expected Output: c == 0xA0 || c == BYTE_ORDER_MARK || Character.getType((char)c) == Character.SPACE_SEPARATOR
     int c = 128;
-    assertTrue(TokenStream.isJSSpace(c) == (c == 0x20 || c == 0x9 || c == 0xC || c == 0xB));
+
+    TokenStream instance = new TokenStream(null, sampleString, 0);
+
+    char reflectedBYTE_ORDER_MARK = '\u0000';
+
+    Class secretClass = instance.getClass();
+    Field fields[] = secretClass.getDeclaredFields();
+    for (int i = 0; i < fields.length; i++){
+       if (fields[i].getName() == "BYTE_ORDER_MARK") {
+         fields[i].setAccessible(true);
+         reflectedBYTE_ORDER_MARK = (Character)fields[i].get(instance);
+       }
+    }
+
+    assertTrue(TokenStream.isJSSpace(c) == (c == 0xA0 || c == reflectedBYTE_ORDER_MARK
+                || Character.getType((char)c) == Character.SPACE_SEPARATOR));
   }
 
   @Test
@@ -569,11 +584,19 @@ public class TokenStreamTest {
 
   @Test
   //Tests if the method returns to correct decimal value for the string number
-  //Input: s = "5", start = 50, radix = 10
   //Input: s = "Z", start = 0, radix = 10
   //Output: result = NaN
   public void testStringToNumber_gb_NaN() {
     Double result = TokenStream.stringToNumber("Z",0,10);
+    assertTrue(Double.isNaN(result));
+  }
+
+  @Test
+  //Tests if the method returns to correct decimal value for the string number
+  //Input: s = "5", start = 50, radix = 10
+  //Output: result = NaN
+  public void testStringToNumber_gb_NaN_1() {
+    Double result = TokenStream.stringToNumber("5",50,10);
     assertTrue(Double.isNaN(result));
   }
 }
