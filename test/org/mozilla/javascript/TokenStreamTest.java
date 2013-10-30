@@ -29,7 +29,7 @@ public class TokenStreamTest {
 
     Class secretClass = instance.getClass();
     Field fields[] = secretClass.getDeclaredFields();
-    System.out.println("Access all the fields");
+    // System.out.println("Access all the fields");
     for (int i = 0; i < fields.length; i++){
        if (fields[i].getName() == "sourceEnd") {
          fields[i].setAccessible(true);
