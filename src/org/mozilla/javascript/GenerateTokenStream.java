@@ -11,7 +11,7 @@ public class GenerateTokenStream {
 			System.out.println("Enter JavaScript File To Parse: ");
 			System.out.flush();
 			String js_file = br.readLine();
-			TokenStream ts = new TokenStream(null, "var a = 5",1);
+			TokenStream ts = new TokenStream(null, "\\u+",1);
 //			TokenStream ts = new TokenStream(new FileReader(js_file), "", 1);
 			int token;
 

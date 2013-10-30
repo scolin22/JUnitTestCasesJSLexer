@@ -40,7 +40,7 @@ public class TokenStreamTest {
 
     assertNull(instance.getSourceString());
     assertTrue(reflectedSourceReader == sr);
-    assertTrue(reflectedSourceEnd >= 0);
+    assertTrue(reflectedSourceEnd == 0);
     assertTrue(instance.sourceCursor == 0);
     assertTrue(instance.cursor == 0);
   }
@@ -54,6 +54,7 @@ public class TokenStreamTest {
 
     int reflectedSourceEnd = -1;
     Object reflectedSourceReader = null;
+    Object reflectedSourceBuffer = null;
 
     Class secretClass = instance.getClass();
     Field fields[] = secretClass.getDeclaredFields();
@@ -64,10 +65,14 @@ public class TokenStreamTest {
        } else if (fields[i].getName() == "sourceReader") {
          fields[i].setAccessible(true);
          reflectedSourceReader = fields[i].get(instance);
-       }
+        } else if (fields[i].getName() == "sourceBuffer") {
+         fields[i].setAccessible(true);
+         reflectedSourceBuffer = fields[i].get(instance);
+        }
     }
 
     assertNull(instance.getSourceString());
+    assertNotNull(reflectedSourceBuffer);
     assertNotNull(reflectedSourceReader);
     assertTrue(reflectedSourceEnd >= 0);
     assertTrue(instance.sourceCursor == 0);
@@ -98,7 +103,7 @@ public class TokenStreamTest {
 
     assertTrue(instance.getSourceString() == sampleString);
     assertNull(reflectedSourceReader);
-    assertTrue(reflectedSourceEnd >= 0);
+    assertTrue(reflectedSourceEnd == instance.getSourceString().length());
     assertTrue(instance.sourceCursor == 0);
     assertTrue(instance.cursor == 0);
   }
@@ -305,7 +310,17 @@ public class TokenStreamTest {
   }
 
   @Test
-  public void testGetToken_gb_ERROR() throws IOException {
+  public void testGetToken_gb_ERROR_1() throws IOException {
+    //Test if the method returns a ERROR
+    //Input: bad unicode String simulating a bad unicode FileReader
+    //Expect: Token.ERROR
+    //exits on line 260 prove with debugger
+    TokenStream instance = new TokenStream(new StringReader("\\u+"), null, 1);
+    assertTrue(instance.getToken() == Token.ERROR);
+  }
+
+  @Test
+  public void testGetToken_gb_ERROR_2() throws IOException {
     //Test if the method returns a ERROR
     //Input: bad unicode String simulating a bad unicode FileReader
     //Expect: Token.ERROR
@@ -515,7 +530,7 @@ public class TokenStreamTest {
   //Tests if the method returns to correct decimal value for the string number
   //Input: s = "FFFF", start = 0, radix = 16
   //Output: result = 65535.0
-  public void testStringToNumber_bb_rad16_start0_boundary() {
+  public void testStringToNumber_gb_rad16_start0_boundary() {
     Double result = TokenStream.stringToNumber("FFFF",0,16);
     assertTrue(result == 65535.0);
   }
@@ -524,9 +539,18 @@ public class TokenStreamTest {
   //Tests if the method returns to correct decimal value for the string number
   //Input: s = "ffff", start = 0, radix = 16
   //Output: result = 65535.0
-  public void testStringToNumber_bb_rad16_start0_boundary_up() {
+  public void testStringToNumber_gb_rad16_start0_boundary_up() {
     Double result = TokenStream.stringToNumber("ffff",0,16);
     assertTrue(result == 65535.0);
+  }
+
+  @Test
+  //Tests if the method returns to correct decimal value for the string number
+  //Input: s = "5", start = 50, radix = 10
+  //Output: result = NaN
+  public void testStringToNumber_gb_NaN() {
+    Double result = TokenStream.stringToNumber("5",50,10);
+    assertTrue(Double.isNaN(result));
   }
 
 }
