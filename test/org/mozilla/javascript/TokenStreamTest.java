@@ -89,6 +89,7 @@ public class TokenStreamTest {
 
     int reflectedSourceEnd = -1;
     Object reflectedSourceReader = null;
+    Object reflectedSourceBuffer = null;
 
     Class secretClass = instance.getClass();
     Field fields[] = secretClass.getDeclaredFields();
@@ -99,10 +100,14 @@ public class TokenStreamTest {
        } else if (fields[i].getName() == "sourceReader") {
          fields[i].setAccessible(true);
          reflectedSourceReader = fields[i].get(instance);
-       }
+       } else if (fields[i].getName() == "sourceBuffer") {
+         fields[i].setAccessible(true);
+         reflectedSourceBuffer = fields[i].get(instance);
+        }
     }
 
     assertTrue(instance.getSourceString() == sampleString);
+    assertNull(reflectedSourceBuffer);
     assertNull(reflectedSourceReader);
     assertTrue(reflectedSourceEnd == instance.getSourceString().length());
     assertTrue(instance.sourceCursor == 0);
