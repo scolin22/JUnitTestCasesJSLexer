@@ -1,5 +1,6 @@
 package org.mozilla.javascript;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -297,7 +298,9 @@ public class TokenStreamTest {
     //Input: empty String simulating an empty FileReader
     //Expect: Token.EOF
     TokenStream instance = new TokenStream(new StringReader(""), null, 1);
-    assertTrue(instance.getToken() == Token.EOF);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.EOF);
   }
 
   @Test
@@ -306,7 +309,9 @@ public class TokenStreamTest {
     //Input: \n String simulating a new line in FileReader
     //Expect: Token.EOL
     TokenStream instance = new TokenStream(new StringReader("\n"), null, 1);
-    assertTrue(instance.getToken() == Token.EOL);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.EOL);
   }
 
   @Test
@@ -316,7 +321,9 @@ public class TokenStreamTest {
     //Expect: Token.ERROR
     //exits on line 260 prove with debugger
     TokenStream instance = new TokenStream(new StringReader("\\u+"), null, 1);
-    assertTrue(instance.getToken() == Token.ERROR);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.ERROR);
   }
 
   @Test
@@ -325,7 +332,9 @@ public class TokenStreamTest {
     //Input: bad unicode String simulating a bad unicode FileReader
     //Expect: Token.ERROR
     TokenStream instance = new TokenStream(new StringReader("\\*"), null, 1);
-    assertTrue(instance.getToken() == Token.ERROR);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.ERROR);
   }
 
   @Test
@@ -334,7 +343,9 @@ public class TokenStreamTest {
     //Input: regular String simulating a regular FileReader
     //Expect: Token.NAME
     TokenStream instance = new TokenStream(new StringReader("a"), null, 1);
-    assertTrue(instance.getToken() == Token.NAME);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.NAME);
   }
 
   @Test
@@ -343,7 +354,9 @@ public class TokenStreamTest {
     //Input: regular String simulating a regular FileReader
     //Expect: Token.NUMBER
     TokenStream instance = new TokenStream(new StringReader("1"), null, 1);
-    assertTrue(instance.getToken() == Token.NUMBER);
+    int result = instance.getToken();
+    assertTrue(result >= -1 && result <= 162);
+    assertTrue(result == Token.NUMBER);
   }
 
   @Test
@@ -371,6 +384,15 @@ public class TokenStreamTest {
     //Expected Output: c == 0x20 || c == 0x9 || c == 0xC || c == 0xB
     int c = 128;
     assertTrue(TokenStream.isJSSpace(c) == (c == 0x20 || c == 0x9 || c == 0xC || c == 0xB));
+  }
+
+  @Test
+  public void testIsJSSpace_gb_cis0x12() {
+    //Tests if the method returns the boolean for a given int
+    //Input: c = 0x12
+    //Expected Output: bool false
+    int c = 0x12;
+    assertFalse(TokenStream.isJSSpace(c));
   }
 
   @Test
@@ -548,10 +570,10 @@ public class TokenStreamTest {
   @Test
   //Tests if the method returns to correct decimal value for the string number
   //Input: s = "5", start = 50, radix = 10
+  //Input: s = "Z", start = 0, radix = 10
   //Output: result = NaN
   public void testStringToNumber_gb_NaN() {
-    Double result = TokenStream.stringToNumber("5",50,10);
+    Double result = TokenStream.stringToNumber("Z",0,10);
     assertTrue(Double.isNaN(result));
   }
-
 }
