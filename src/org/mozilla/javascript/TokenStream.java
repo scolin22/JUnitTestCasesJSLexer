@@ -45,7 +45,8 @@
 
 package org.mozilla.javascript;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * This class implements the JavaScript scanner.
@@ -110,9 +111,9 @@ public class TokenStream
         }
         return "";
     }
-    
+
     /*@ requires Token.EOF == 0 && name != null;
-        ensures (name.equals("else") ==> \result == Token.ELSE) && 
+        ensures (name.equals("else") ==> \result == Token.ELSE) &&
         		(name.equals("false") ==> \result == Token.FALSE) &&
         		(name.equals("function") ==> \result == Token.FUNCTION) &&
         		(name.equals("if") ==> \result == Token.IF) &&
@@ -120,7 +121,7 @@ public class TokenStream
         		(name.equals("true") ==> \result == Token.TRUE) &&
         		(!(name.equals("else") || name.equals("false") || name.equals("function") || name.equals("if") || name.equals("return") || name.equals("true")) ==> \result == Token.EOF) &&
         		((\result == 0) || (\result == 113) || (\result == 44) || (\result == 109) || (\result == 112) || (\result == 4) || (\result == 45));
-    @*/ 
+    @*/
     public static int stringToKeyword(String name)
     {
     	// The following assumes that Token.EOF == 0
@@ -161,7 +162,7 @@ public class TokenStream
 
     //@ ensures \result == sourceString;
     final String getSourceString() { return sourceString; }
-    
+
     //@ ensures \result == lineno;
     final int getLineno() { return lineno; }
 
@@ -175,7 +176,7 @@ public class TokenStream
 
     //@ ensures \result == number;
     public final double getNumber() { return number; }
-    
+
     //@ ensures \result == isOctal;
     public final boolean isNumberOctal() { return isOctal; }
 
@@ -302,7 +303,7 @@ public class TokenStream
                 isOctal = false;
                 stringBufferTop = 0;
                 int base = 10;
-                
+
                 if (c == '0') {
                     c = getChar();
                     if (c == 'x' || c == 'X') {
@@ -351,11 +352,11 @@ public class TokenStream
                 this.number = dval;
                 return Token.NUMBER;
             }
-            
+
             return operatorToken(c);
         }
     }
-    
+
     //@ requires stringBuffer != null && (sourceString == null ==> (sourceBuffer != null && sourceReader != null));
     //@ ensures \result >= -1 && \result <= 162;
     //@ signals_only RuntimeException, IOException;
@@ -579,7 +580,7 @@ public class TokenStream
         stringBuffer[N] = (char)c;
         stringBufferTop = N + 1;
     }
-    
+
     //@ requires ungetBuffer != null;
     //@ ensures \result == (ungetCursor == 0 || ungetBuffer[ungetCursor - 1] != '\n');
     private boolean canUngetChar() {
@@ -812,7 +813,7 @@ public class TokenStream
 
     //@ requires sourceBuffer != null && sourceReader != null;
     //@ assignable sourceBuffer[*], sourceEnd, sourceCursor, lineStart, sourceReader, \not_specified;
-    //@ signals_only RuntimeException, IndexOutOfBoundsException, ArrayStoreException, NullPointerException, IOException; 
+    //@ signals_only RuntimeException, IndexOutOfBoundsException, ArrayStoreException, NullPointerException, IOException;
     private boolean fillSourceBuffer() throws IOException
     {
         if (sourceString != null) Kit.codeBug();
@@ -873,8 +874,9 @@ public class TokenStream
     public int getTokenLength() {
         return tokenEnd - tokenBeg;
     }
-     
+
 	 //@ requires (radix == 10 || radix == 8 || radix == 16) && start >= 0 && s != null;
+   //Radix is the decimal base
 	 static double stringToNumber(String s, int start, int radix) {
 	     char digitMax = '9';
 	     char lowerCaseBound = 'a';
@@ -894,9 +896,9 @@ public class TokenStream
 			 int newDigit;
 			 if ('0' <= c && c <= digitMax)
 				 newDigit = c - '0';
-			 else if ('a' <= c && c < lowerCaseBound)
+			 else if ('a' <= c && c < lowerCaseBound) //<=
 				 newDigit = c - 'a' + 10;
-			 else if ('A' <= c && c < upperCaseBound)
+			 else if ('A' <= c && c < upperCaseBound) //<=
 				 newDigit = c - 'A' + 10;
 			 else
 			     break;
@@ -907,7 +909,7 @@ public class TokenStream
 	     }
 	     return sum;
 	 }
-     
+
      public static boolean isJSLineTerminator(int c)
      {
          // Optimization for faster check for eol character:
@@ -963,6 +965,6 @@ public class TokenStream
     // Record start and end positions of last scanned token.
     int tokenBeg;
     int tokenEnd;
-    
+
     public static final double NaN = Double.longBitsToDouble(0x7ff8000000000000L);
 }
