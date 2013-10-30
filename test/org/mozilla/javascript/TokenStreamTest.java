@@ -536,6 +536,7 @@ public class TokenStreamTest {
   }
 
   @Test
+  //Returns a bug
   //Tests if the method returns to correct decimal value for the string number
   //Input: s = "ffff", start = 0, radix = 16
   //Output: result = 65535.0

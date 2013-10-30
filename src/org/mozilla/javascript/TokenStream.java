@@ -896,9 +896,9 @@ public class TokenStream
 			 int newDigit;
 			 if ('0' <= c && c <= digitMax)
 				 newDigit = c - '0';
-			 else if ('a' <= c && c < lowerCaseBound) //<=
+			 else if ('a' <= c && c < lowerCaseBound) //<= : bug
 				 newDigit = c - 'a' + 10;
-			 else if ('A' <= c && c < upperCaseBound) //<=
+			 else if ('A' <= c && c < upperCaseBound) //<= : bug
 				 newDigit = c - 'A' + 10;
 			 else
 			     break;
