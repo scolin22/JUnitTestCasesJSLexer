@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class TokenStreamTest {
   }
 
   @Test
-  public void testTokenStream_BlackBox_ssnull() throws IllegalAccessException, IllegalArgumentException {
+  public void testTokenStream_bb_ssnull() throws IllegalAccessException, IllegalArgumentException {
     //BlackBox test on the specs
     //Input: sourceReader = "var a = 5", sourceString = "", Lineno = 1
     //Expected Output: this.sourceString == null, this.sourceReader != null, this.sourceEnd >= 0, this.sourceCursor == 0, this.cursor == 0
@@ -48,7 +49,7 @@ public class TokenStreamTest {
   }
 
   @Test
-  public void testTokenStream_BlackBox_ssnotnull() throws IllegalAccessException, IllegalArgumentException {
+  public void testTokenStream_bb_ssnotnull() throws IllegalAccessException, IllegalArgumentException {
     //BlackBox test on the specs
     //Input: sourceReader = "", sourceString = "var a = 5", Lineno = 1
     //Expected Output: this.sourceString != null, this.sourceReader == null, this.sourceEnd >= 0, this.sourceCursor == 0, this.cursor == 0
@@ -78,8 +79,73 @@ public class TokenStreamTest {
   }
 
   @Test
-  public void testStringToKeyword() {
-    fail("Not yet implemented");
+  public void testStringToKeyword_bb_else() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "else"
+    //Expected Output: id = Token.ELSE
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("else") == Token.ELSE);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("else")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_false() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "false"
+    //Expected Output: id = Token.FALSE
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("false") == Token.FALSE);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("false")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_function() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "function"
+    //Expected Output: id = Token.FUNCTION
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("function") == Token.FUNCTION);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("function")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_if() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "if"
+    //Expected Output: id = Token.IF
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("if") == Token.IF);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("if")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_return() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "return"
+    //Expected Output: id = Token.RETURN
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("return") == Token.RETURN);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("return")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_true() {
+    //Tests if the method returns the correct token for a given string
+    //Input: name = "true"
+    //Expected Output: id = Token.TRUE
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("true") == Token.TRUE);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("true")));
+  }
+
+  @Test
+  public void testStringToKeyword_bb_noneoftheabove() {
+    //Tests if EOF is returned for none of the tokens
+    //Input: name = ""
+    //Expected Output: id = Token.EOF
+    Integer[] array = {0, 113, 44, 109, 112, 4, 45};
+    assertTrue(TokenStream.stringToKeyword("") == Token.EOF);
+    assertTrue(Arrays.asList(array).contains(TokenStream.stringToKeyword("")));
   }
 
   @Test
